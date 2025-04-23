@@ -7,14 +7,20 @@ function Home() {
 
   return (
     <div className="home-container">
-      <div className="home-content">
+      <div className="home-box">
         <img src="/images/logo.png" alt="PetConnect Logo" className="home-logo" />
         <h1 className="home-title">Welcome to PetConnect</h1>
         <p className="home-slogan">A Home for Every Heart 🐾</p>
-
         <div className="home-buttons">
-          <button onClick={() => navigate("/register")}>Get Started</button>
-          <button onClick={() => userId ? navigate("/dashboard") : navigate("/login")}>Browse Pets</button>
+          <button className="home-btn primary" onClick={() => navigate("/register")}>
+            Get Started
+          </button>
+          <button
+            className="home-btn secondary"
+            onClick={() => navigate(userId ? "/dashboard" : "/login")}
+          >
+            Browse Pets
+          </button>
         </div>
       </div>
     </div>
@@ -22,6 +28,7 @@ function Home() {
 }
 
 export default Home;
+
 
 
 

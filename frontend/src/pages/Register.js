@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
-import "./Login.css"; // same styling as Login
+import "./Login.css";
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("adopter");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("adopter");
   const navigate = useNavigate();
 
   const handleRegister = async () => {
     try {
       await API.post("/register", { name, email, password, role });
-      alert("Registration successful!");
+      alert("Registered successfully!");
       navigate("/login");
     } catch {
-      alert("Registration failed.");
+      alert("Registration failed");
     }
   };
 
@@ -24,7 +24,8 @@ function Register() {
     <div className="auth-wrapper">
       <div className="auth-box">
         <img src="/images/logo.png" alt="Logo" className="auth-logo" />
-        <h2>Register</h2>
+        <h2>Create Account</h2>
+
         <input
           placeholder="Name"
           className="auth-input"
@@ -50,17 +51,21 @@ function Register() {
           value={role}
           onChange={(e) => setRole(e.target.value)}
         >
-          <option value="adopter">Adopter (Search & adopt pets)</option>
-          <option value="shelter">Shelter (Post/manage pets)</option>
+          <option value="adopter">Adopter (Looking to adopt pets)</option>
+          <option value="shelter">Shelter (Posting adoptable pets)</option>
         </select>
-        <button className="auth-btn" onClick={handleRegister}>Register</button>
-        <p className="auth-link" onClick={() => navigate("/login")}>Already registered? Login</p>
+
+        <button className="auth-btn" onClick={handleRegister}>
+          Register
+        </button>
+
+        <p className="auth-link" onClick={() => navigate("/login")}>
+          Already registered? Login
+        </p>
       </div>
     </div>
   );
 }
 
 export default Register;
-
-
 
