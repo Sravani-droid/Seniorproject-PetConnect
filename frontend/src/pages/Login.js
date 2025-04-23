@@ -1,63 +1,71 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "./Login.css";
 
 function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     try {
-      const response = await API.post("/login", form);
-      localStorage.setItem("userId", response.data.user_id);
-      localStorage.setItem("userRole", response.data.role);
-      alert("Login successful!");
+      const res = await API.post("/login", { email, password });
+      localStorage.setItem("userId", res.data.user.id);
+      localStorage.setItem("userRole", res.data.user.role);
       navigate("/dashboard");
-    } catch (err) {
+    } catch {
       alert("Login failed. Please check your credentials.");
     }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "500px" }}>
-      <Link to="/" className="btn btn-outline-secondary mb-3">🏠 Home</Link>
-      <h2>Login to PetConnect</h2>
-      <p className="text-muted">Access your account to browse or manage pets.</p>
+    <GoogleOAuthProvider clientId="693342524373-6m9p2a9gn4aujd09lde1ilo6uq0g1cd8.apps.googleusercontent.com">
+      <div className="auth-wrapper">
+        <div className="auth-box">
+          <img src="/images/logo.png" alt="Logo" className="auth-logo" />
+          <h2>Login</h2>
 
-      <form onSubmit={handleLogin}>
-        <input
-          className="form-control my-2"
-          placeholder="Email"
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="form-control my-2"
-          placeholder="Password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button className="btn btn-success w-100 mt-2" type="submit">Login</button>
-      </form>
+          <input
+            type="email"
+            placeholder="Email"
+            className="auth-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      <p className="mt-3 text-center">
-        Don't have an account?{" "}
-        <Link to="/register">Register here</Link>
-      </p>
-    </div>
+          <input
+            type="password"
+            placeholder="Password"
+            className="auth-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button className="auth-btn" onClick={handleLogin}>Login</button>
+
+          <div className="auth-separator">or</div>
+
+          <GoogleLogin
+            onSuccess={(res) => {
+              console.log("Google login success", res);
+              alert("Logged in with Google!");
+              navigate("/dashboard");
+            }}
+            onError={() => {
+              alert("Google login failed");
+              console.error("Google Login Error");
+            }}
+          />
+
+          <p className="auth-link" onClick={() => navigate("/register")}>
+            Don’t have an account? Register
+          </p>
+        </div>
+      </div>
+    </GoogleOAuthProvider>
   );
 }
 
 export default Login;
-

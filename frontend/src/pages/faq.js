@@ -1,23 +1,22 @@
+import "./FormPage.css";
+
 function FAQ() {
-    const faqs = [
-      { question: "How do I adopt a pet?", answer: "Register, browse pets, and contact the shelter." },
-      { question: "Can I post pets?", answer: "Only shelters can post adoptable pets." },
-      { question: "Is PetConnect free?", answer: "Yes! It's built for educational purposes." }
-    ];
-  
-    return (
-      <div className="container mt-4">
-        <h2>Frequently Asked Questions</h2>
-        <ul className="list-group">
-          {faqs.map((faq, i) => (
-            <li key={i} className="list-group-item">
-              <strong>{faq.question}</strong><br />
-              {faq.answer}
-            </li>
-          ))}
-        </ul>
+  return (
+    <div className="form-container">
+      <h2>❓ Frequently Asked Questions</h2>
+      <div className="faq-item">
+        <h4>How do I adopt a pet?</h4>
+        <p>Browse pets, login, and contact the shelter through PetConnect.</p>
       </div>
-    );
-  }
-  export default FAQ;
+      <div className="faq-item">
+        <h4>Can I donate without an account?</h4>
+        <p>No, you need to be logged in to donate.</p>
+      </div>
+      {/* Add more questions as needed */}
+    </div>
+  );
+}
+
+export default FAQ;
+
   

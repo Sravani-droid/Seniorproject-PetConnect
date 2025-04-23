@@ -1,14 +1,50 @@
-.container h1 {
-    color: #4c4c4c;
-  }
-  
-  .lead {
-    font-size: 1.2rem;
-    color: #555;
-  }
-  
-  footer {
-    font-size: 0.9rem;
-    color: #888;
-  }
-  
+.home-container {
+  background: linear-gradient(to right, #1a1a1a, #333);
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-content {
+  text-align: center;
+  padding: 30px;
+  background-color: rgba(255, 215, 0, 0.05); /* golden tint */
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.home-logo {
+  height: 100px;
+  margin-bottom: 20px;
+}
+
+.home-title {
+  font-size: 2.5rem;
+  color: #f5c518;
+}
+
+.home-slogan {
+  font-style: italic;
+  margin-bottom: 30px;
+  color: #ddd;
+}
+
+.home-buttons button {
+  background-color: #f5c518;
+  color: black;
+  padding: 12px 25px;
+  border: none;
+  margin: 0 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.home-buttons button:hover {
+  background-color: #e6b800;
+}
+
+
+

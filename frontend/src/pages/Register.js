@@ -1,94 +1,66 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "./Login.css"; // same styling as Login
 
 function Register() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "adopter",
-  });
-
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("adopter");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleRegister = async () => {
     try {
-      await API.post("/register", form);
-      alert("Registration successful! Please log in.");
+      await API.post("/register", { name, email, password, role });
+      alert("Registration successful!");
       navigate("/login");
-    } catch (err) {
-      alert("Registration failed. Email might already be used.");
+    } catch {
+      alert("Registration failed.");
     }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "500px" }}>
-      <Link to="/" className="btn btn-outline-secondary mb-3">🏠 Home</Link>
-      <h2>Create Your PetConnect Account 🐾</h2>
-      <p className="text-muted">
-        Whether you're looking to adopt or help animals find homes, you're in the right place!
-      </p>
-
-      <form onSubmit={handleSubmit}>
+    <div className="auth-wrapper">
+      <div className="auth-box">
+        <img src="/images/logo.png" alt="Logo" className="auth-logo" />
+        <h2>Register</h2>
         <input
-          className="form-control my-2"
-          placeholder="Full Name"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          required
+          placeholder="Name"
+          className="auth-input"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <input
-          className="form-control my-2"
-          placeholder="Email"
-          name="email"
           type="email"
-          value={form.email}
-          onChange={handleChange}
-          required
+          placeholder="Email"
+          className="auth-input"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          className="form-control my-2"
-          placeholder="Password"
-          name="password"
           type="password"
-          value={form.password}
-          onChange={handleChange}
-          required
+          placeholder="Password"
+          className="auth-input"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-
-        <label className="form-label mt-3">Who are you?</label>
         <select
-          className="form-select"
-          name="role"
-          value={form.role}
-          onChange={handleChange}
+          className="auth-input"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
         >
-          <option value="adopter">Adopter - Looking to adopt</option>
-          <option value="shelter">Shelter - Listing animals</option>
+          <option value="adopter">Adopter (Search & adopt pets)</option>
+          <option value="shelter">Shelter (Post/manage pets)</option>
         </select>
-
-        <div className="form-text mt-2 mb-3">
-          By signing up, you agree to our{" "}
-          <a href="#">Privacy Policy</a> and{" "}
-          <a href="#">Terms of Service</a>.
-        </div>
-
-        <button className="btn btn-primary w-100" type="submit">Register</button>
-      </form>
-
-      <p className="mt-3 text-center">
-        Already have an account?{" "}
-        <Link to="/login">Login here</Link>
-      </p>
+        <button className="auth-btn" onClick={handleRegister}>Register</button>
+        <p className="auth-link" onClick={() => navigate("/login")}>Already registered? Login</p>
+      </div>
     </div>
   );
 }
 
 export default Register;
+
+
+

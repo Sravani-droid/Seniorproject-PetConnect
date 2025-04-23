@@ -1,68 +1,59 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "./FormPage.css";
 
 function AddSuccessStory() {
-  const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
-  const [preview, setPreview] = useState("");
+  const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
 
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => setPreview(reader.result);
-    if (file) reader.readAsDataURL(file);
-  };
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
 
-  const submitStory = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!userId) return navigate("/login");
+
     try {
       await API.post("/add_success_story", {
+        user_id: userId,
         title,
         text,
-        image_url: preview,
-        shelter_id: userId, 
-      
-      
-
+        image_url: imageUrl,
       });
-      alert("Story added!");
-      setTitle(""); setText(""); setPreview("");
-    } catch (err) {
-      alert("Failed to submit story.");
+      alert("Story shared!");
+      navigate("/success-stories");
+    } catch {
+      alert("Failed to share story.");
     }
   };
 
   return (
-    <div className="container mt-4">
-      <Link to="/" className="btn btn-outline-secondary mb-3">🏠 Home</Link>
-      <h2>Share Your Success Story 🐶</h2>
-
-      <input
-        className="form-control my-2"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <textarea
-        className="form-control my-2"
-        placeholder="What happened?"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-      <input
-        className="form-control my-2"
-        type="file"
-        accept="image/*"
-        onChange={handleImage}
-      />
-      {preview && <img src={preview} alt="preview" style={{ maxWidth: "200px", marginTop: "10px" }} />}
-      <button className="btn btn-primary mt-3" onClick={submitStory}>Submit</button>
+    <div className="form-container">
+      <h2>📝 Share Your Story</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <textarea
+          placeholder="Write your story..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          required
+        />
+        <input
+          placeholder="Image URL"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+        />
+        <button type="submit">Share Story</button>
+      </form>
     </div>
   );
 }
 
 export default AddSuccessStory;
-
-
-

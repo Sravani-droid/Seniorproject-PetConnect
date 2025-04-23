@@ -1,46 +1,47 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "./FormPage.css";
 
 function Donate() {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
 
-  const submitDonation = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!userId) return navigate("/login");
+
     try {
-      await API.post("/donate", {
-        user_id: userId,
-        amount: parseFloat(amount),
-        message
-      });
-      alert("Donation sent, thank you!");
-      setAmount(""); setMessage("");
+      await API.post("/donate", { user_id: userId, amount, message });
+      alert("Thank you for your donation!");
     } catch {
       alert("Donation failed.");
     }
   };
 
   return (
-    <div className="container mt-4">
-      <Link to="/" className="btn btn-outline-secondary mb-3">🏠 Home</Link>
-      <h2>Support Us with a Donation 💖</h2>
-      <input
-        className="form-control my-2"
-        type="number"
-        placeholder="Amount ($)"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
-      <textarea
-        className="form-control my-2"
-        placeholder="Message (optional)"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button className="btn btn-success" onClick={submitDonation}>Donate</button>
+    <div className="form-container">
+      <h2>💖 Make a Donation</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="number"
+          placeholder="Amount in USD"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          required
+        />
+        <textarea
+          placeholder="Leave a message (optional)"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <button type="submit">Donate</button>
+      </form>
     </div>
   );
 }
 
 export default Donate;
+
