@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
-import "./FormPage.css";
+import "../styles/Dashboard.css";
 
 function Donate() {
   const [amount, setAmount] = useState("");
@@ -11,33 +11,48 @@ function Donate() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!userId) return navigate("/login");
+    if (!userId) {
+      alert("You must be logged in to donate!");
+      return navigate("/login");
+    }
 
     try {
-      await API.post("/donate", { user_id: userId, amount, message });
-      alert("Thank you for your donation!");
-    } catch {
-      alert("Donation failed.");
+      await API.post("/donate", {
+        user_id: userId,
+        amount: parseFloat(amount),
+        message,
+      });
+      alert("💖 Donation successful!");
+      setAmount("");
+      setMessage("");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Donation error:", err);
+      alert("❌ Donation failed.");
     }
   };
 
   return (
     <div className="form-container">
+      <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
       <h2>💖 Make a Donation</h2>
       <form onSubmit={handleSubmit}>
         <input
+          className="auth-input"
           type="number"
-          placeholder="Amount in USD"
+          step="0.01"
+          placeholder="Amount (USD)"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           required
         />
         <textarea
-          placeholder="Leave a message (optional)"
+          className="auth-textarea"
+          placeholder="Message (optional)"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button type="submit">Donate</button>
+        <button type="submit" className="auth-btn">Donate</button>
       </form>
     </div>
   );

@@ -1,0 +1,115 @@
+body {
+  background: #121212;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.dashboard-container {
+  background: #121212;
+  color: #fff;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background: #1f1f1f;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.2);
+}
+
+.dashboard-header h2 {
+  color: #facc15;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.dashboard-actions input,
+.dashboard-actions select {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background: #1f1f1f;
+  color: #fff;
+  border: 1px solid #facc15;
+}
+
+.dashboard-feature-buttons,
+.shelter-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-feature-buttons button,
+.shelter-tools button {
+  padding: 10px 16px;
+  background-color: #facc15;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.dashboard-feature-buttons button:hover,
+.shelter-tools button:hover {
+  background-color: #e6b800;
+  transform: scale(1.05);
+}
+
+.pet-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.pet-card {
+  background: #1f1f1f;
+  border-radius: 12px;
+  width: 240px;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.2);
+  overflow: hidden;
+  color: #fff;
+  transition: transform 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.pet-card:hover {
+  transform: scale(1.02);
+}
+
+.pet-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 6px 6px 0 0;
+}
+
+.pet-info {
+  padding: 1rem;
+}
+
+.pet-info h5 {
+  font-size: 1.1rem;
+  color: #facc15;
+  margin-bottom: 0.5rem;
+}
+
+.pet-desc {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+  
+  
+  
+  

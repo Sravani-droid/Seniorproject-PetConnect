@@ -1,41 +1,73 @@
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import React from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-
+import { Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom";
+import "./App.css";
+import Navbar from "./components/Navbar";
+import AddEvent from "./pages/AddEvent";
+import AddPet from "./pages/AddPet";
 import AddSuccessStory from "./pages/AddSuccessStory";
-import ScheduleAppointment from "./pages/Appointments";
+import Appointments from "./pages/Appointments";
 import Dashboard from "./pages/Dashboard";
 import Donate from "./pages/Donate";
-import FAQ from "./pages/faq";
-import Feedback from "./pages/feedback";
+import EditPet from "./pages/EditPet";
+import EditSuccessStory from "./pages/EditSuccessStory";
+import Events from "./pages/Events";
+import FAQ from "./pages/FAQ";
+import Favorites from "./pages/Favorites";
+import Feedback from "./pages/Feedback";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import PetDetail from "./pages/PetDetail";
 import Register from "./pages/Register";
+import SelectDelete from "./pages/SelectDelete";
+import SelectEdit from "./pages/SelectEdit";
 import SuccessStories from "./pages/SuccessStories";
+import VirtualMeeting from "./pages/VirtualMeeting";
+import AdopterDashboard from "./views/AdopterDashboard";
+import ShelterDashboard from "./views/ShelterDashboard";
+
+function AppRoutes() {
+  const location = useLocation();
+  const hideNavbarOn = ["/", "/login", "/register"];
+  const showNavbar = !hideNavbarOn.includes(location.pathname);
+
+  return (
+    <>
+      {showNavbar && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/add-pet" element={<AddPet />} />
+        <Route path="/edit-pet/:id" element={<EditPet />} />
+        <Route path="/select-edit" element={<SelectEdit />} />
+        <Route path="/select-delete" element={<SelectDelete />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/add-success-story" element={<AddSuccessStory />} />
+        <Route path="/edit-success-story/:id" element={<EditSuccessStory />} />
+        <Route path="/appointments" element={<Appointments />} />
+        <Route path="/donate" element={<Donate />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/feedback" element={<Feedback />} />
+        <Route path="/pets/:id" element={<PetDetail />} />
+        <Route path="/success-stories" element={<SuccessStories />} />
+        <Route path="/virtual-meeting" element={<VirtualMeeting />} />
+        <Route path="/adopter-dashboard" element={<AdopterDashboard />} />
+        <Route path="/shelter-dashboard" element={<ShelterDashboard />} />
+        <Route path="/add-event" element={<AddEvent />} />
+      </Routes>
+    </>
+  );
+}
 
 function App() {
   return (
-    
-    <GoogleOAuthProvider clientId="693342524373-6m9p2a9gn4aujd09lde1ilo6uq0g1cd8.apps.googleusercontent.com">
-      <h1 style={{ color: "red" }}>If you see this, React is working</h1>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/pets/:id" element={<PetDetail />} />
-          <Route path="/success-stories" element={<SuccessStories />} />
-          <Route path="/add-success-story" element={<AddSuccessStory />} />
-          <Route path="/appointments" element={<ScheduleAppointment />} />
-          <Route path="/donate" element={<Donate />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/feedback" element={<Feedback />} />
-        </Routes>
-      </Router>
-    </GoogleOAuthProvider>
+    <Router>
+      <AppRoutes />
+    </Router>
   );
 }
 
 export default App;
+
+

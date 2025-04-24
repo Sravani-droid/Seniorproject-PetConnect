@@ -1,56 +1,65 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
-import "./FormPage.css";
+import "../styles/Dashboard.css";
 
 function AddSuccessStory() {
-  const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
-
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const navigate = useNavigate();
+  const shelterId = localStorage.getItem("userId");
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreviewUrl(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!userId) return navigate("/login");
-
     try {
       await API.post("/add_success_story", {
-        user_id: userId,
         title,
         text,
-        image_url: imageUrl,
+        image_url: previewUrl,
+        shelter_id: shelterId,
       });
-      alert("Story shared!");
+      alert("✅ Story posted!");
       navigate("/success-stories");
-    } catch {
-      alert("Failed to share story.");
+    } catch (err) {
+      console.error("Story error:", err);
+      alert("❌ Failed to post story.");
     }
   };
 
   return (
     <div className="form-container">
-      <h2>📝 Share Your Story</h2>
+      <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+      <h2>📖 Share a Success Story</h2>
       <form onSubmit={handleSubmit}>
         <input
-          placeholder="Title"
+          type="text"
+          placeholder="Story Title"
+          className="auth-input"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
         />
         <textarea
-          placeholder="Write your story..."
+          placeholder="Tell your story..."
+          className="auth-textarea"
           value={text}
           onChange={(e) => setText(e.target.value)}
           required
         />
-        <input
-          placeholder="Image URL"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-        />
-        <button type="submit">Share Story</button>
+        <label className="form-label">Upload Image</label>
+        <input type="file" className="form-control my-2" onChange={handleFileChange} />
+        {previewUrl && <img src={previewUrl} alt="Preview" style={{ maxWidth: "100%", borderRadius: "8px", marginTop: "1rem" }} />}
+        <button className="auth-btn" type="submit">Submit Story</button>
       </form>
     </div>
   );

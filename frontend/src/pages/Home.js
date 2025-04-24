@@ -3,7 +3,6 @@ import "./Home.css";
 
 function Home() {
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
 
   return (
     <div className="home-container">
@@ -11,14 +10,12 @@ function Home() {
         <img src="/images/logo.png" alt="PetConnect Logo" className="home-logo" />
         <h1 className="home-title">Welcome to PetConnect</h1>
         <p className="home-slogan">A Home for Every Heart 🐾</p>
+
         <div className="home-buttons">
           <button className="home-btn primary" onClick={() => navigate("/register")}>
             Get Started
           </button>
-          <button
-            className="home-btn secondary"
-            onClick={() => navigate(userId ? "/dashboard" : "/login")}
-          >
+          <button className="home-btn secondary" onClick={() => navigate("/login")}>
             Browse Pets
           </button>
         </div>
@@ -28,6 +25,8 @@ function Home() {
 }
 
 export default Home;
+
+
 
 
 

@@ -1,33 +1,37 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import API from "../services/api";
+import "../styles/Dashboard.css";
 
 function EditSuccessStory() {
   const { id } = useParams();
-  const [story, setStory] = useState(null);
-  const [preview, setPreview] = useState("");
   const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
     async function fetchStory() {
-      const res = await API.get("/success_stories");
-      const current = res.data.find((s) => s.id === parseInt(id));
-      if (current) {
-        setStory(current);
-        setPreview(current.image_url);
+      try {
+        const res = await API.get("/success_stories");
+        const story = res.data.find((s) => s.id === parseInt(id));
+        if (story) {
+          setTitle(story.title);
+          setText(story.text);
+          setImageUrl(story.image_url || "");
+        }
+      } catch (err) {
+        console.error("Error fetching story:", err);
       }
     }
+
     fetchStory();
   }, [id]);
 
-  const handleChange = (e) => {
-    setStory({ ...story, [e.target.name]: e.target.value });
-  };
-
-  const handleImage = (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onloadend = () => setPreview(reader.result);
+    reader.onloadend = () => setImageUrl(reader.result);
     if (file) reader.readAsDataURL(file);
   };
 
@@ -35,44 +39,52 @@ function EditSuccessStory() {
     e.preventDefault();
     try {
       await API.put(`/update_success_story/${id}`, {
-        ...story,
-        image_url: preview,
+        title,
+        text,
+        image_url: imageUrl,
       });
-      alert("Story updated!");
-      navigate("/success-stories");
+      alert("✅ Story updated!");
+      navigate("/dashboard");
     } catch (err) {
-      alert("Update failed.");
+      console.error("Update failed:", err);
+      alert("❌ Failed to update story.");
     }
   };
 
-  if (!story) return <p>Loading...</p>;
-
   return (
-    <div className="container mt-4">
-      <Link to="/" className="btn btn-outline-secondary mb-3">🏠 Home</Link>
-      <h2>Edit Your Story</h2>
+    <div className="form-container">
+      <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+      <h2>Edit Success Story</h2>
       <form onSubmit={handleSubmit}>
         <input
-          className="form-control my-2"
-          name="title"
-          value={story.title}
-          onChange={handleChange}
+          className="auth-input"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
         />
         <textarea
-          className="form-control my-2"
-          name="text"
-          value={story.text}
-          onChange={handleChange}
+          className="auth-textarea"
+          placeholder="Story Text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          required
         />
+        <label className="form-label">Upload Image</label>
         <input
           type="file"
-          className="form-control"
-          onChange={handleImage}
+          className="form-control mb-3"
           accept="image/*"
+          onChange={handleImageUpload}
         />
-        {preview && <img src={preview} alt="" style={{ maxWidth: "200px", marginTop: "10px" }} />
-    }
-        <button type="submit" className="btn btn-primary mt-3">Save Changes</button>
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt="Preview"
+            style={{ maxWidth: "300px", marginBottom: "1rem", borderRadius: "8px" }}
+          />
+        )}
+        <button type="submit" className="auth-btn">Update Story</button>
       </form>
     </div>
   );

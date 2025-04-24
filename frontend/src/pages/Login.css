@@ -1,56 +1,80 @@
-.auth-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(to right, #1f1f1f, #292929);
-  }
-  
-  .auth-box {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    width: 350px;
-    text-align: center;
-  }
-  
-  .auth-logo {
-    height: 70px;
-    margin-bottom: 1rem;
-  }
-  
-  .auth-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-  
-  .auth-btn {
-    width: 100%;
-    padding: 10px;
-    background-color: #f5b942;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .auth-btn:hover {
-    background-color: #e3a72e;
-  }
-  
-  .auth-link {
-    margin-top: 1rem;
-    color: #0077cc;
-    cursor: pointer;
-  }
-  
-  .auth-google {
-    margin: 1rem 0;
-  }
+.auth-container {
+  background: #121212;
+  color: #facc15;
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);
+  text-align: center;
+}
+
+.auth-logo {
+  width: 100px;
+  margin-bottom: 1rem;
+}
+
+.auth-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #facc15;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #facc15;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.auth-input::placeholder {
+  color: #ccc;
+}
+
+.auth-btn {
+  background-color: #facc15;
+  color: #121212;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.auth-btn:hover {
+  background-color: #e6b800;
+  transform: scale(1.03);
+}
+
+.auth-link {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.auth-highlight {
+  color: #facc15;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.auth-highlight:hover {
+  text-decoration: underline;
+}
+
+.back-link {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
   
   

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
-import "./FormPage.css";
+import "../styles/Dashboard.css";
 
 function SuccessStories() {
   const [stories, setStories] = useState([]);
@@ -8,23 +8,23 @@ function SuccessStories() {
   useEffect(() => {
     API.get("/success_stories")
       .then((res) => setStories(res.data))
-      .catch(() => alert("Failed to load stories."));
+      .catch((err) => console.error("Failed to fetch stories", err));
   }, []);
 
   return (
-    <div className="form-container">
-      <h2>🐶 Adoption Success Stories</h2>
-      {stories.length === 0 ? (
-        <p>No stories yet!</p>
-      ) : (
-        stories.map((s) => (
-          <div key={s.id} className="story-card">
-            <img src={s.image_url} alt={s.title} />
-            <h4>{s.title}</h4>
-            <p>{s.text}</p>
+    <div className="dashboard-container">
+      <h2 className="welcome-msg">📖 Success Stories</h2>
+      <div className="pet-grid">
+        {stories.map((story) => (
+          <div key={story.id} className="pet-card">
+            <img src={story.image_url} alt={story.title} />
+            <div className="pet-info">
+              <h5>{story.title}</h5>
+              <p className="pet-desc">{story.text.slice(0, 80)}...</p>
+            </div>
           </div>
-        ))
-      )}
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,20 +1,21 @@
 .home-container {
-  background: linear-gradient(to right, #1a1a1a, #333);
+  background: #1a1a1a;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  color: white;
 }
 
 .home-box {
-  background: #fff;
+  text-align: center;
+  background-color: #121212;
   padding: 40px 30px;
   border-radius: 15px;
-  text-align: center;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.2);
   max-width: 600px;
   width: 100%;
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
 }
 
 .home-logo {
@@ -23,16 +24,16 @@
 }
 
 .home-title {
-  color: #f5c518;
-  font-size: 2.3rem;
+  font-size: 2.5rem;
+  color: #facc15;
   margin-bottom: 10px;
 }
 
 .home-slogan {
   font-style: italic;
-  color: #666;
-  font-size: 1.2rem;
+  color: #ccc;
   margin-bottom: 30px;
+  font-size: 1.2rem;
 }
 
 .home-buttons {
@@ -43,7 +44,7 @@
 
 .home-btn {
   padding: 12px 28px;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -54,6 +55,7 @@
 .primary {
   background-color: #facc15;
   color: #1e1e1e;
+  border-color: #facc15;
 }
 
 .primary:hover {
@@ -62,11 +64,12 @@
 
 .secondary {
   background-color: #1e1e1e;
-  color: white;
+  color: #fff;
+  border: 2px solid #facc15;
 }
 
 .secondary:hover {
-  background-color: #333;
+  background-color: #2a2a2a;
 }
 
 

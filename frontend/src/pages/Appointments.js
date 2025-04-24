@@ -1,51 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
-import "./FormPage.css";
+import "../styles/Dashboard.css";
 
-function ScheduleAppointment() {
-  const [datetime, setDatetime] = useState("");
-  const [reason, setReason] = useState("");
-  const userId = localStorage.getItem("userId");
+function Appointments() {
+  const [appointments, setAppointments] = useState([]);
+  const [pets, setPets] = useState([]);
   const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!userId) return navigate("/login");
+  useEffect(() => {
+    API.get("/appointments")
+      .then((res) => setAppointments(res.data.filter(a => a.user_id === userId)))
+      .catch((err) => console.error("Failed to fetch appointments", err));
 
-    try {
-      await API.post("/appointments", {
-        user_id: userId,
-        date_time: datetime,
-        reason,
-      });
-      alert("Appointment scheduled!");
-    } catch {
-      alert("Failed to schedule.");
-    }
+    API.get("/pets")
+      .then((res) => setPets(res.data))
+      .catch((err) => console.error("Failed to fetch pets", err));
+  }, [userId]);
+
+  const getPetName = (id) => {
+    const pet = pets.find(p => p.id === id);
+    return pet ? pet.name : "Unknown Pet";
   };
 
   return (
-    <div className="form-container">
-      <h2>📅 Schedule an Appointment</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="datetime-local"
-          value={datetime}
-          onChange={(e) => setDatetime(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Reason or message..."
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          required
-        />
-        <button type="submit">Schedule</button>
-      </form>
+    <div className="dashboard-container">
+      <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+      <h2 className="welcome-msg">📌 Appointments</h2>
+
+      {appointments.length ? (
+        <div className="pet-grid">
+          {appointments.map((appt) => (
+            <div className="pet-card" key={appt.id}>
+              <div className="pet-info">
+                <h5>{getPetName(appt.pet_id)}</h5>
+                <p><strong>Date:</strong> {appt.date}</p>
+                <p><strong>Time:</strong> {appt.time}</p>
+                <p className="pet-desc">{appt.message}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No appointments found.</p>
+      )}
     </div>
   );
 }
 
-export default ScheduleAppointment;
+export default Appointments;
+
 

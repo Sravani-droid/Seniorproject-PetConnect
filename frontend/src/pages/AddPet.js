@@ -1,126 +1,108 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "../styles/FormPage.css";
 
 function AddPet() {
-  const [name, setName] = useState("");
-  const [breed, setBreed] = useState("");
-  const [age, setAge] = useState("");
-  const [petType, setPetType] = useState("");
-  const [origin, setOrigin] = useState("");
-  const [description, setDescription] = useState("");
-  const [gender, setGender] = useState("");
-  const [birthdate, setBirthdate] = useState("");
-  const [weight, setWeight] = useState("");
-  const [height, setHeight] = useState("");
-  const [health, setHealth] = useState("");
-  const [rabies, setRabies] = useState(false);
-  const [trained, setTrained] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    breed: "",
+    age: "",
+    pet_type: "",
+    origin: "",
+    description: "",
+    gender: "",
+    birthdate: "",
+    weight: "",
+    height: "",
+    health_status: "",
+    rabies_vaccinated: false,
+    trained: false,
+    spayed_neutered: false,
+  });
+
+  const [image, setImage] = useState("");
   const navigate = useNavigate();
   const shelterId = localStorage.getItem("userId");
 
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setImage(reader.result);
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e) => {
-    
-
     e.preventDefault();
-    
-
     try {
       await API.post("/add_pet", {
-        name,
-        breed,
-        age: parseInt(age),
-        pet_type: petType,
-        origin,
-        description,
-        gender,
-        birthdate,
-        weight,
-        height,
-        health_status: health,
-        rabies_vaccinated: rabies,
-        image_url: previewUrl,
-        trained,
+        ...form,
+        age: parseInt(form.age),
+        image_url: image,
         shelter_id: shelterId,
       });
-      alert("Pet added successfully!");
+      alert("✅ Pet added successfully!");
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Add pet error:", error);
-      alert("Failed to add pet.");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to add pet.");
     }
   };
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result); // base64 string
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  
 
   return (
-    <div className="container mt-4">
-      <h2>Add a New Pet 🐶</h2>
+    <div className="form-container">
+      <h2>➕ Add a New Pet</h2>
       <form onSubmit={handleSubmit}>
-        <input className="form-control my-2" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-        <input className="form-control my-2" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder="Breed" />
-        <input className="form-control my-2" type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Age" />
-
-        <select className="form-select my-2" value={petType} onChange={(e) => setPetType(e.target.value)}>
-          <option value="">Select Type</option>
+        <input name="name" value={form.name} onChange={handleChange} placeholder="Name" className="auth-input" />
+        <input name="breed" value={form.breed} onChange={handleChange} placeholder="Breed" className="auth-input" />
+        <input type="number" name="age" value={form.age} onChange={handleChange} placeholder="Age" className="auth-input" />
+        <select name="pet_type" value={form.pet_type} onChange={handleChange} className="auth-input">
+          <option value="">Type</option>
           <option value="Dog">Dog</option>
           <option value="Cat">Cat</option>
           <option value="Other">Other</option>
         </select>
-
-        <select className="form-select my-2" value={origin} onChange={(e) => setOrigin(e.target.value)}>
-          <option value="">Select Origin</option>
+        <select name="origin" value={form.origin} onChange={handleChange} className="auth-input">
+          <option value="">Origin</option>
           <option value="Stray">Stray</option>
           <option value="Surrendered">Surrendered</option>
         </select>
-
-        <textarea className="form-control my-2" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-
-        <label className="form-label">Upload Pet Image</label>
-        <input
-      
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="form-control my-2"
-       />
-
-
-        {/* Additional Fields */}
-        <input className="form-control my-2" value={gender} onChange={(e) => setGender(e.target.value)} placeholder="Gender (Male/Female)" />
-        <label>Birthdate</label>
-        <input
-          type="date"
-          className="form-control my-2"
-          value={birthdate}
-         onChange={(e) => setBirthdate(e.target.value)}
-/>
-
-        <input className="form-control my-2" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="Weight (lbs)" />
-        <input className="form-control my-2" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="Height (inches)" />
-        <input className="form-control my-2" value={health} onChange={(e) => setHealth(e.target.value)} placeholder="Health Status" />
+        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="auth-textarea" />
+        <input name="gender" value={form.gender} onChange={handleChange} placeholder="Gender" className="auth-input" />
+        <input type="date" name="birthdate" value={form.birthdate} onChange={handleChange} className="auth-input" />
+        <input name="weight" value={form.weight} onChange={handleChange} placeholder="Weight" className="auth-input" />
+        <input name="height" value={form.height} onChange={handleChange} placeholder="Height" className="auth-input" />
+        <input name="health_status" value={form.health_status} onChange={handleChange} placeholder="Health Status" className="auth-input" />
 
         <div className="form-check my-2">
-          <input className="form-check-input" type="checkbox" checked={rabies} onChange={() => setRabies(!rabies)} />
+          <input type="checkbox" checked={form.rabies_vaccinated} name="rabies_vaccinated" onChange={handleChange} />
           <label className="form-check-label">Rabies Vaccinated</label>
         </div>
 
         <div className="form-check my-2">
-          <input className="form-check-input" type="checkbox" checked={trained} onChange={() => setTrained(!trained)} />
+          <input type="checkbox" checked={form.trained} name="trained" onChange={handleChange} />
           <label className="form-check-label">Trained</label>
         </div>
 
-        <button className="btn btn-primary mt-3" type="submit">Add Pet</button>
+        <div className="form-check my-2">
+          <input type="checkbox" checked={form.spayed_neutered} name="spayed_neutered" onChange={handleChange} />
+          <label className="form-check-label">Spayed/Neutered</label>
+        </div>
+
+        <label>Upload Image</label>
+        <input type="file" accept="image/*" onChange={handleImage} className="auth-input" />
+        {image && <img src={image} alt="preview" style={{ maxWidth: "200px", margin: "10px 0", borderRadius: "8px" }} />}
+
+        <button type="submit" className="auth-btn">Add Pet</button>
       </form>
     </div>
   );
