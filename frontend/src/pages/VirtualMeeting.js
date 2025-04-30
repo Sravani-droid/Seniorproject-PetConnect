@@ -17,8 +17,9 @@ function VirtualMeeting() {
   useEffect(() => {
     initGapi();
     API.get("/pets")
-      .then(res => setPets(res.data))
-      .catch(err => console.error("Failed to fetch pets:", err));
+  .then(res => setPets(res.data))
+  .catch((err) => {console.error("Virtual meeting error:", err.response?.data || err.message || err);
+  });
   }, []);
 
   const handleSubmit = async (e) => {

@@ -1,4 +1,4 @@
-const CLIENT_ID = "693342524373-6mem1ididado33qq7npstrucdsgqm41l.apps.googleusercontent.com";
+const CLIENT_ID = "693342524373-6mem1ididado33qq7npstrucdsgqm4l1.apps.googleusercontent.com";
 const SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
 export function initGapi() {

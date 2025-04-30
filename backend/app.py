@@ -257,20 +257,22 @@ def get_appointments():
             "message": a.message
         } for a in Appointment.query.all()
     ])
-@app.route('/appointments', methods=['POST'])
+@app.route("/appointments", methods=["POST"])
 def create_appointment():
     data = request.get_json()
-    appt = Appointment(
-        user_id=data['user_id'],
-        pet_id=data['pet_id'],
-        date=data['date'],
-        time=data['time'],
-        message=data.get('message', '')
-    )
-    db.session.add(appt)
-    db.session.commit()
-    return jsonify({"message": "Appointment created!"})
-
+    try:
+        new_appointment = Appointment(
+            user_id=data["user_id"],
+            pet_id=data["pet_id"],
+            date=data["date"],
+            time=data["time"],
+            message=data.get("message", "")
+        )
+        db.session.add(new_appointment)
+        db.session.commit()
+        return jsonify({"message": "Appointment booked"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 # ------------------- Donations -------------------
 @app.route('/donate', methods=['POST'])
 def donate():

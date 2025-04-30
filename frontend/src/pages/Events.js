@@ -23,6 +23,7 @@ function Events() {
       {isShelter && (
         <div className="dashboard-feature-buttons">
           <button onClick={() => navigate("/add-event")}>➕ Add Event</button>
+          <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
         </div>
       )}
 
