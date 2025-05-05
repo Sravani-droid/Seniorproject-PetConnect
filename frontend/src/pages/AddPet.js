@@ -19,6 +19,13 @@ function AddPet() {
     rabies_vaccinated: false,
     trained: false,
     spayed_neutered: false,
+    dapp: false,
+    lepto: false,
+    bordetella: false,
+    fvrcp: false,
+    good_with_dogs: false,
+    good_with_cats: false,
+    good_with_kids: false,
   });
 
   const [image, setImage] = useState("");
@@ -58,45 +65,61 @@ function AddPet() {
     }
   };
 
+  // Debug visibility
+  console.log("Pet type is:", form.pet_type);
+
   return (
     <div className="form-container">
       <h2>➕ Add a New Pet</h2>
       <form onSubmit={handleSubmit}>
         <input name="name" value={form.name} onChange={handleChange} placeholder="Name" className="auth-input" />
-        <input name="breed" value={form.breed} onChange={handleChange} placeholder="Breed" className="auth-input" />
+        <input name="breed" value={form.breed} onChange={handleChange} placeholder="Breed (e.g. Labrador Mix)" className="auth-input" />
         <input type="number" name="age" value={form.age} onChange={handleChange} placeholder="Age" className="auth-input" />
+
         <select name="pet_type" value={form.pet_type} onChange={handleChange} className="auth-input">
-          <option value="">Type</option>
+          <option value="">Species</option>
           <option value="Dog">Dog</option>
           <option value="Cat">Cat</option>
           <option value="Other">Other</option>
         </select>
+
         <select name="origin" value={form.origin} onChange={handleChange} className="auth-input">
           <option value="">Origin</option>
           <option value="Stray">Stray</option>
           <option value="Surrendered">Surrendered</option>
         </select>
+
         <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="auth-textarea" />
         <input name="gender" value={form.gender} onChange={handleChange} placeholder="Gender" className="auth-input" />
         <input type="date" name="birthdate" value={form.birthdate} onChange={handleChange} className="auth-input" />
-        <input name="weight" value={form.weight} onChange={handleChange} placeholder="Weight" className="auth-input" />
-        <input name="height" value={form.height} onChange={handleChange} placeholder="Height" className="auth-input" />
+        <input name="weight" value={form.weight} onChange={handleChange} placeholder="Weight (lbs)" className="auth-input" />
+        <input name="height" value={form.height} onChange={handleChange} placeholder="Height (inches)" className="auth-input" />
         <input name="health_status" value={form.health_status} onChange={handleChange} placeholder="Health Status" className="auth-input" />
 
-        <div className="form-check my-2">
-          <input type="checkbox" checked={form.rabies_vaccinated} name="rabies_vaccinated" onChange={handleChange} />
-          <label className="form-check-label">Rabies Vaccinated</label>
-        </div>
+        {/* Conditional Dog Vaccines */}
+        {form.pet_type === "Dog" && (
+          <>
+            <div className="form-check"><input type="checkbox" name="dapp" onChange={handleChange} checked={form.dapp} /> DAPP – Core vaccine for dogs</div>
+            <div className="form-check"><input type="checkbox" name="lepto" onChange={handleChange} checked={form.lepto} /> Lepto – Prevents leptospirosis</div>
+            <div className="form-check"><input type="checkbox" name="bordetella" onChange={handleChange} checked={form.bordetella} /> Bordetella – Kennel cough protection</div>
+          </>
+        )}
 
-        <div className="form-check my-2">
-          <input type="checkbox" checked={form.trained} name="trained" onChange={handleChange} />
-          <label className="form-check-label">Trained</label>
-        </div>
+        {/* Conditional Cat Vaccine */}
+        {form.pet_type === "Cat" && (
+          <div className="form-check">
+            <input type="checkbox" name="fvrcp" onChange={handleChange} checked={form.fvrcp} /> FVRCP – Protects cats from 3 core viruses
+          </div>
+        )}
 
-        <div className="form-check my-2">
-          <input type="checkbox" checked={form.spayed_neutered} name="spayed_neutered" onChange={handleChange} />
-          <label className="form-check-label">Spayed/Neutered</label>
-        </div>
+        {/* Shared checkboxes */}
+        <div className="form-check"><input type="checkbox" name="rabies_vaccinated" onChange={handleChange} checked={form.rabies_vaccinated} /> Rabies Vaccinated</div>
+        <div className="form-check"><input type="checkbox" name="trained" onChange={handleChange} checked={form.trained} /> Trained</div>
+        <div className="form-check"><input type="checkbox" name="spayed_neutered" onChange={handleChange} checked={form.spayed_neutered} /> Spayed/Neutered</div>
+
+        <div className="form-check"><input type="checkbox" name="good_with_dogs" onChange={handleChange} checked={form.good_with_dogs} /> Good With Dogs</div>
+        <div className="form-check"><input type="checkbox" name="good_with_cats" onChange={handleChange} checked={form.good_with_cats} /> Good With Cats</div>
+        <div className="form-check"><input type="checkbox" name="good_with_kids" onChange={handleChange} checked={form.good_with_kids} /> Good With Kids</div>
 
         <label>Upload Image</label>
         <input type="file" accept="image/*" onChange={handleImage} className="auth-input" />
@@ -109,3 +132,4 @@ function AddPet() {
 }
 
 export default AddPet;
+

@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../pages/MapWithDirections";
 import API from "../services/api";
 import "../styles/Dashboard.css";
+
 
 function ShelterDashboard() {
   const [pets, setPets] = useState([]);
   const navigate = useNavigate();
   const userName = localStorage.getItem("userName") || "Shelter";
-  const userId = localStorage.getItem("userId");
+  const userId = Number(localStorage.getItem("userId"));
 
   useEffect(() => {
     API.get("/pets")
       .then((res) => {
-        const myPets = res.data.filter(pet => pet.shelter_id === Number(userId));
+        const myPets = res.data.filter((pet) => pet.shelter_id === userId);
         setPets(myPets);
       })
       .catch((err) => console.error("Error fetching pets", err));
@@ -20,19 +22,20 @@ function ShelterDashboard() {
 
   return (
     <div className="dashboard-container">
-      <h2>Welcome to PetConnect, {userName}</h2>
+      <h2>Welcome, {userName}!</h2>
 
       <div className="dashboard-feature-buttons">
-        <button onClick={() => navigate("/add-pet")}>➕ Add Pet</button>
-        <button onClick={() => navigate("/select-edit")}>✏️ Edit</button>
-        <button onClick={() => navigate("/select-delete")}>🗑️ Delete</button>
-        <button onClick={() => navigate("/add-success-story")}>📖 Share Story</button>
-        <button onClick={() => navigate("/appointments")}>📌 Appointments</button>
-        <button onClick={() => navigate("/donate")}>💖 Donate</button>
-        <button onClick={() => navigate("/feedback")}>📝 Feedback</button>
-        <button onClick={() => navigate("/faq")}>❓ FAQs</button>
-        <button onClick={() => navigate("/events")}>📅 Events</button>
-      </div>
+        <button onClick={() => navigate("/add-pet")}>Add Pet</button>
+        <button onClick={() => navigate("/select-edit")}>Edit</button>
+        <button onClick={() => navigate("/select-delete")}>Delete</button>
+        <button onClick={() => navigate("/add-success-story")}>Share Story</button>
+        <button onClick={() => navigate("/appointments")}>Appointments</button>
+        <button onClick={() => navigate("/donate")}>Donate</button>
+        <button onClick={() => navigate("/feedback")}>Feedback</button>
+        <button onClick={() => navigate("/faq")}>FAQs</button>
+        <button onClick={() => navigate("/events")}>Events</button>
+        <button onClick={() => navigate("/map-directions")}>Get Directions</button>
+        </div>
 
       <div className="pet-grid">
         {pets.length ? pets.map((pet) => (

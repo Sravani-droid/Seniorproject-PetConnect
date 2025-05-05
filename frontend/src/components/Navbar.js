@@ -19,7 +19,7 @@ function Navbar() {
   return (
     <nav className="navbar-dashboard">
       <div className="logo-title" onClick={() => navigate("/dashboard")}>
-        🐾 Welcome to PetConnect, <span style={{ color: "#facc15" }}>{userName}</span>
+         Welcome to PetConnect, <span style={{ color: "#facc15" }}>{userName}</span>
       </div>
       <div className="profile-dropdown">
         <span className="profile-icon" role="img" aria-label="profile">👤</span>

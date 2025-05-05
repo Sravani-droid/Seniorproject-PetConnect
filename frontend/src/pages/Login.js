@@ -29,7 +29,7 @@ function Login() {
         navigate("/dashboard");
       }
     } catch (error) {
-      alert("Login failed: " + (error.response?.data?.message || error.message));
+      console.error("login failed", error.response?.data?.message || error.message);
     }
   };
 

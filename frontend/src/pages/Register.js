@@ -14,7 +14,6 @@ function Register() {
     try {
       await API.post("/register", { name, email, password, role });
       localStorage.clear(); // Clear any previous session data
-      alert("Registered successfully! Please log in.");
       navigate("/login");
     } catch (err) {
       alert(err.response?.data?.message || "Registration failed");

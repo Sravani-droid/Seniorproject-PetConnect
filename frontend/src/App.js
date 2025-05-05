@@ -6,7 +6,10 @@ import AddPet from "./pages/AddPet";
 import AddSuccessStory from "./pages/AddSuccessStory";
 import Appointments from "./pages/Appointments";
 import Dashboard from "./pages/Dashboard";
+import DeleteAppointment from "./pages/DeleteAppointment";
 import Donate from "./pages/Donate";
+import EditAppointment from "./pages/EditAppointment";
+import EditEvent from "./pages/EditEvent";
 import EditPet from "./pages/EditPet";
 import EditSuccessStory from "./pages/EditSuccessStory";
 import Events from "./pages/Events";
@@ -15,6 +18,7 @@ import Favorites from "./pages/Favorites";
 import Feedback from "./pages/Feedback";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import MapWithDirections from "./pages/MapWithDirections";
 import PetDetail from "./pages/PetDetail";
 import Register from "./pages/Register";
 import SelectDelete from "./pages/SelectDelete";
@@ -23,6 +27,9 @@ import SuccessStories from "./pages/SuccessStories";
 import VirtualMeeting from "./pages/VirtualMeeting";
 import AdopterDashboard from "./views/AdopterDashboard";
 import ShelterDashboard from "./views/ShelterDashboard";
+
+
+
 
 function AppRoutes() {
   const location = useLocation();
@@ -55,7 +62,11 @@ function AppRoutes() {
         <Route path="/adopter-dashboard" element={<AdopterDashboard />} />
         <Route path="/shelter-dashboard" element={<ShelterDashboard />} />
         <Route path="/add-event" element={<AddEvent />} />
-      </Routes>
+        <Route path="/edit-appointment" element={<EditAppointment />} />
+        <Route path="/delete-appointment" element={<DeleteAppointment />} />
+        <Route path="/edit-event/:id" element={<EditEvent />} />
+        <Route path="/map-directions" element={<MapWithDirections />} />
+        </Routes>
     </>
   );
 }

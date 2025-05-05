@@ -1,32 +1,62 @@
-const CLIENT_ID = "693342524373-6mem1ididado33qq7npstrucdsgqm4l1.apps.googleusercontent.com";
+const CLIENT_ID = "191876397340-utstac6rfsros92b4a3uvlhrs09f2s1g.apps.googleusercontent.com";
 const SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
+let tokenClient;
+
 export function initGapi() {
-  return new Promise((resolve) => {
-    window.gapi.load("client:auth2", async () => {
-      await window.gapi.client.init({
-        clientId: CLIENT_ID,
-        scope: SCOPES,
-      });
-      resolve();
-    });
+  tokenClient = window.google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: (tokenResponse) => {
+      localStorage.setItem("access_token", tokenResponse.access_token);
+    },
   });
 }
 
-export async function signInWithGoogle() {
-  const authInstance = window.gapi.auth2.getAuthInstance();
-  const user = await authInstance.signIn();
-  return user.getBasicProfile();
+export function signInWithGoogle() {
+  return new Promise((resolve, reject) => {
+    if (tokenClient) {
+      tokenClient.callback = (resp) => {
+        if (resp && resp.access_token) {
+          localStorage.setItem("access_token", resp.access_token);
+          resolve(resp.access_token);
+        } else {
+          reject("Failed to get access token");
+        }
+      };
+      tokenClient.requestAccessToken();
+    } else {
+      reject("Google client not initialized.");
+    }
+  });
 }
 
 export async function createCalendarEvent(event) {
-  return window.gapi.client.calendar.events.insert({
-    calendarId: "primary",
-    resource: {
+  const accessToken = localStorage.getItem("access_token");
+
+  const response = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
       summary: event.title,
       description: event.description,
-      start: { dateTime: event.start, timeZone: "America/New_York" },
-      end: { dateTime: event.end, timeZone: "America/New_York" },
-    },
-  }).execute();
+      start: {
+        dateTime: event.start,
+        timeZone: "America/Chicago",
+      },
+      end: {
+        dateTime: event.end,
+        timeZone: "America/Chicago",
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create calendar event");
+  }
+
+  return response.json();
 }

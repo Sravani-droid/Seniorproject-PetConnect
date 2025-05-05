@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import "../pages/MapWithDirections";
 import API from "../services/api";
 import "../styles/Dashboard.css";
+
 
 function AdopterDashboard() {
   const [pets, setPets] = useState([]);
@@ -12,7 +14,6 @@ function AdopterDashboard() {
     JSON.parse(localStorage.getItem("favorites")) || []
   );
   const navigate = useNavigate();
-  const userName = localStorage.getItem("userName") || "Adopter";
 
   useEffect(() => {
     API.get("/pets")
@@ -38,33 +39,26 @@ function AdopterDashboard() {
     <>
       <Navbar />
       <div className="dashboard-container">
-        <h2 className="welcome-msg">Welcome to PetConnect, {userName}</h2>
-        
         <div className="dashboard-actions">
-          <input
-            type="text"
-            placeholder="Search breed..."
-            value={breedFilter}
-            onChange={(e) => setBreedFilter(e.target.value)}
-          />
+          <input type="text" placeholder="Search breed..." value={breedFilter} onChange={(e) => setBreedFilter(e.target.value)} />
           <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-            <option value="All">All Types</option>
+            <option value="All">All Species</option>
             {[...new Set(pets.map((p) => p.pet_type))].map((type) => (
               <option key={type}>{type}</option>
             ))}
           </select>
         </div>
-
         <div className="dashboard-feature-buttons">
-          <button onClick={() => navigate("/events")}>📅 Events</button>
-          <button onClick={() => navigate("/appointments")}>📌 Appointments</button>
-          <button onClick={() => navigate("/donate")}>💖 Donate</button>
-          <button onClick={() => navigate("/feedback")}>📝 Feedback</button>
-          <button onClick={() => navigate("/faq")}>❓ FAQs</button>
-          <button onClick={() => navigate("/virtual-meeting")}>📹 Meet Shelter</button>
-          <button onClick={() => navigate("/success-stories")}>🌟 Success Stories</button>
+          <button onClick={() => navigate("/events")}>Events</button>
+          <button onClick={() => navigate("/appointments")}>Appointments</button>
+          <button onClick={() => navigate("/donate")}> Donate</button>
+          <button onClick={() => navigate("/feedback")}> Feedback</button>
+          <button onClick={() => navigate("/faq")}>FAQs</button>
+          <button onClick={() => navigate("/virtual-meeting")}> Meet Shelter</button>
+          <button onClick={() => navigate("/success-stories")}>Success Stories</button>
+          <button onClick={() => navigate("/map-directions")}>Get Directions</button>
+          
         </div>
-
         <div className="pet-grid">
           {filteredPets.length ? (
             filteredPets.map((pet) => (
@@ -78,7 +72,7 @@ function AdopterDashboard() {
                 <div className="pet-card-buttons">
                   <button onClick={() => navigate(`/pets/${pet.id}`)}>View</button>
                   <button onClick={() => toggleFavorite(pet.id)}>
-                    {favorites.includes(pet.id) ? "💛 Unfavorite" : "🤍 Favorite"}
+                    {favorites.includes(pet.id) ? "❤️Unfavorite" : "🤍Favorite"}
                   </button>
                 </div>
               </div>
@@ -93,5 +87,3 @@ function AdopterDashboard() {
 }
 
 export default AdopterDashboard;
-
-  

@@ -5,27 +5,22 @@ import "../styles/Dashboard.css";
 
 function EditSuccessStory() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchStory() {
-      try {
-        const res = await API.get("/success_stories");
-        const story = res.data.find((s) => s.id === parseInt(id));
+    API.get("/success_stories")
+      .then((res) => {
+        const story = res.data.find((s) => s.id === Number(id));
         if (story) {
           setTitle(story.title);
           setText(story.text);
           setImageUrl(story.image_url || "");
         }
-      } catch (err) {
-        console.error("Error fetching story:", err);
-      }
-    }
-
-    fetchStory();
+      })
+      .catch((err) => console.error("Fetch error:", err));
   }, [id]);
 
   const handleImageUpload = (e) => {
@@ -43,48 +38,36 @@ function EditSuccessStory() {
         text,
         image_url: imageUrl,
       });
-      alert("✅ Story updated!");
-      navigate("/dashboard");
+      navigate("/success-stories");
     } catch (err) {
       console.error("Update failed:", err);
-      alert("❌ Failed to update story.");
     }
   };
 
   return (
     <div className="form-container">
       <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
-      <h2>Edit Success Story</h2>
+      <h2>Edit Story</h2>
       <form onSubmit={handleSubmit}>
         <input
           className="auth-input"
-          placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
         />
         <textarea
           className="auth-textarea"
-          placeholder="Story Text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           required
         />
-        <label className="form-label">Upload Image</label>
         <input
           type="file"
-          className="form-control mb-3"
-          accept="image/*"
+          className="form-control my-2"
           onChange={handleImageUpload}
         />
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="Preview"
-            style={{ maxWidth: "300px", marginBottom: "1rem", borderRadius: "8px" }}
-          />
-        )}
-        <button type="submit" className="auth-btn">Update Story</button>
+        {imageUrl && <img src={imageUrl} alt="Preview" className="story-preview" />}
+        <button className="auth-btn" type="submit">Update Story</button>
       </form>
     </div>
   );

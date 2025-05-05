@@ -1,28 +1,30 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
-from models import db, User, Pet, Review, SuccessStory, Appointment, Event, Donation
-from models import FAQ  # if not already present
+from models import db, User, Pet, Review, SuccessStory, Appointment, Event, Donation, FAQ
 
-app = Flask(__name__)
-CORS(app)
+app = Flask(__name__) 
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+# Allow all routes to accept from React frontend
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 bcrypt = Bcrypt(app)
 
 # ------------------- Configuration -------------------
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///petconnect.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db.init_app(app)
 
-# ------------------- Home Route -------------------
+# ------------------- Home -------------------
 @app.route('/')
 def index():
     return "Welcome to PetConnect Flask Backend!"
 
-# ------------------- Auth Routes -------------------
+# ------------------- Auth -------------------
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -42,7 +44,7 @@ def register():
         return jsonify({"message": "Email already exists."}), 409
     except Exception as e:
         return jsonify({"message": f"Error: {str(e)}"}), 500
-    
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -52,11 +54,11 @@ def login():
             "message": "Login successful!",
             "role": user.role,
             "user_id": user.id,
-            "name": user.name  # ensure this line is added
+            "name": user.name
         })
     return jsonify({"message": "Invalid credentials"}), 401
 
-# ------------------- Pet Routes -------------------
+# ------------------- Pets -------------------
 @app.route('/add_pet', methods=['POST'])
 def add_pet():
     data = request.get_json()
@@ -77,6 +79,13 @@ def add_pet():
             rabies_vaccinated=data.get('rabies_vaccinated', False),
             trained=data.get('trained', False),
             spayed_neutered=data.get('spayed_neutered', False),
+            dapp=data.get('dapp', False),
+            lepto=data.get('lepto', False),
+            bordetella=data.get('bordetella', False),
+            fvrcp=data.get('fvrcp', False),
+            good_with_dogs=data.get('good_with_dogs', False),
+            good_with_cats=data.get('good_with_cats', False),
+            good_with_kids=data.get('good_with_kids', False),
             shelter_id=data['shelter_id']
         )
         db.session.add(new_pet)
@@ -105,6 +114,13 @@ def get_pets():
         "rabies_vaccinated": p.rabies_vaccinated,
         "trained": p.trained,
         "spayed_neutered": p.spayed_neutered,
+        "dapp": p.dapp,
+        "lepto": p.lepto,
+        "bordetella": p.bordetella,
+        "fvrcp": p.fvrcp,
+        "good_with_dogs": p.good_with_dogs,
+        "good_with_cats": p.good_with_cats,
+        "good_with_kids": p.good_with_kids,
         "shelter_id": p.shelter_id
     } for p in pets])
 
@@ -128,6 +144,13 @@ def get_pet(id):
         "rabies_vaccinated": pet.rabies_vaccinated,
         "trained": pet.trained,
         "spayed_neutered": pet.spayed_neutered,
+        "dapp": pet.dapp,
+        "lepto": pet.lepto,
+        "bordetella": pet.bordetella,
+        "fvrcp": pet.fvrcp,
+        "good_with_dogs": pet.good_with_dogs,
+        "good_with_cats": pet.good_with_cats,
+        "good_with_kids": pet.good_with_kids,
         "shelter_id": pet.shelter_id
     })
 
@@ -148,74 +171,65 @@ def delete_pet(id):
     db.session.commit()
     return jsonify({"message": "Pet deleted!"})
 
-# ------------------- Review -------------------
+# ------------------- Reviews -------------------
 @app.route('/add_review', methods=['POST'])
 def add_review():
     data = request.get_json()
-    review = Review(
-        text=data['text'],
-        rating=data.get('rating', None),
-        user_id=data['user_id'],
-        pet_id=data['pet_id']
-    )
-    db.session.add(review)
-    db.session.commit()
-    return jsonify({"message": "Review submitted!"})
+    try:
+        new_review = Review(
+            text=data['text'],
+            rating=data.get('rating'),
+            user_id=data['user_id'],
+            pet_id=data['pet_id']
+        )
+        db.session.add(new_review)
+        db.session.commit()
+        return jsonify({"message": "Review added!"}), 201
+    except Exception as e:
+        return jsonify({"message": f"Review error: {str(e)}"}), 500
+
 
 # ------------------- Success Stories -------------------
-@app.route('/success_stories', methods=['GET'])
-def get_success_stories():
-    stories = SuccessStory.query.all()
-
-    # If empty, seed default ones
-    if not stories:
-        defaults = [
-            SuccessStory(title="Buddy Finds a Home", text="Buddy, a rescued labrador, found his forever home thanks to PetConnect!", image_url="https://via.placeholder.com/300", user_id=1),
-            SuccessStory(title="Mittens' Journey", text="Mittens the cat was saved from the streets and is now thriving in her new family.", image_url="https://via.placeholder.com/300", user_id=1),
-            SuccessStory(title="Charlie’s Second Chance", text="Charlie was adopted after just 3 days of listing!", image_url="https://via.placeholder.com/300", user_id=1)
-        ]
-        db.session.bulk_save_objects(defaults)
-        db.session.commit()
-        stories = SuccessStory.query.all()
-
-    return jsonify([
-        {
-            "id": s.id,
-            "title": s.title,
-            "text": s.text,
-            "image_url": s.image_url
-        } for s in stories
-    ])
-
-@app.route('/add_success_story', methods=['POST'])
+@app.route("/add_success_story", methods=["POST"])
 def add_success_story():
     data = request.get_json()
-    story = SuccessStory(
-        title=data['title'],
-        text=data['text'],
-        image_url=data.get('image_url', ''),
-        user_id=data['user_id']
+    new_story = SuccessStory(
+        title=data["title"],
+        text=data["text"],
+        image_url=data.get("image_url", ""),
+        shelter_id=data["shelter_id"]
     )
-    db.session.add(story)
+    db.session.add(new_story)
     db.session.commit()
-    return jsonify({"message": "Story added!"})
+    return jsonify({"message": "Success story added"}), 201
 
-@app.route('/update_success_story/<int:id>', methods=['PUT'])
-def update_success_story(id):
+@app.route("/success_stories", methods=["GET"])
+def get_success_stories():
+    stories = SuccessStory.query.all()
+    return jsonify([{
+        "id": s.id,
+        "title": s.title,
+        "text": s.text,
+        "image_url": s.image_url,
+        "user_id": s.shelter_id
+    } for s in stories])
+
+@app.route("/update_success_story/<int:story_id>", methods=["PUT"])
+def update_success_story(story_id):
     data = request.get_json()
-    story = SuccessStory.query.get_or_404(id)
-    story.title = data.get('title', story.title)
-    story.text = data.get('text', story.text)
-    story.image_url = data.get('image_url', story.image_url)
+    story = SuccessStory.query.get_or_404(story_id)
+    story.title = data["title"]
+    story.text = data["text"]
+    story.image_url = data.get("image_url", story.image_url)
     db.session.commit()
-    return jsonify({"message": "Story updated!"})
+    return jsonify({"message": "Success story updated"})
 
-@app.route('/delete_success_story/<int:id>', methods=['DELETE'])
-def delete_success_story(id):
-    story = SuccessStory.query.get_or_404(id)
+@app.route("/delete_success_story/<int:story_id>", methods=["DELETE"])
+def delete_success_story(story_id):
+    story = SuccessStory.query.get_or_404(story_id)
     db.session.delete(story)
     db.session.commit()
-    return jsonify({"message": "Story deleted!"})
+    return jsonify({"message": "Success story deleted"})
 
 # ------------------- Events -------------------
 @app.route('/events', methods=['GET'])
@@ -244,35 +258,83 @@ def create_event():
     db.session.commit()
     return jsonify({"message": "Event added!"})
 
+@app.route('/events/<int:event_id>', methods=['GET'])
+def get_event_by_id(event_id):
+    event = Event.query.get_or_404(event_id)
+    return jsonify({
+        "id": event.id,
+        "title": event.title,
+        "date": event.date,
+        "location": event.location,
+        "description": event.description,
+        "shelter_id": event.shelter_id
+    })
+
+@app.route('/update_event/<int:event_id>', methods=['PUT'])
+def update_event(event_id):
+    data = request.get_json()
+    event = Event.query.get_or_404(event_id)
+    event.title = data["title"]
+    event.date = data["date"]
+    event.location = data["location"]
+    event.description = data.get("description", "")
+    db.session.commit()
+    return jsonify({"message": "Event updated successfully"})
+
+@app.route('/delete_event/<int:event_id>', methods=['DELETE'])
+def delete_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    db.session.delete(event)
+    db.session.commit()
+    return jsonify({"message": "Event deleted"})
+
 # ------------------- Appointments -------------------
 @app.route('/appointments', methods=['GET'])
 def get_appointments():
-    return jsonify([
-        {
-            "id": a.id,
-            "user_id": a.user_id,
-            "pet_id": a.pet_id,
-            "date": a.date,
-            "time": a.time,
-            "message": a.message
-        } for a in Appointment.query.all()
-    ])
+    return jsonify([{
+        "id": a.id,
+        "user_id": a.user_id,
+        "pet_id": a.pet_id,
+        "date": a.date,
+        "time": a.time,
+        "message": a.message
+    } for a in Appointment.query.all()])
+
 @app.route("/appointments", methods=["POST"])
 def create_appointment():
     data = request.get_json()
-    try:
-        new_appointment = Appointment(
-            user_id=data["user_id"],
-            pet_id=data["pet_id"],
-            date=data["date"],
-            time=data["time"],
-            message=data.get("message", "")
-        )
-        db.session.add(new_appointment)
+    new_appointment = Appointment(
+        user_id=data["user_id"],
+        pet_id=data["pet_id"],
+        date=data["date"],
+        time=data["time"],
+        message=data.get("message", "")
+    )
+    db.session.add(new_appointment)
+    db.session.commit()
+    return jsonify({"message": "Appointment booked"}), 201
+
+@app.route('/appointments/<int:id>', methods=['PUT'])
+def update_appointment(id):
+    appt = Appointment.query.get(id)
+    if not appt:
+        return jsonify({"error": "Appointment not found"}), 404
+    data = request.json
+    appt.date = data.get("date", appt.date)
+    appt.time = data.get("time", appt.time)
+    appt.message = data.get("message", appt.message)
+    db.session.commit()
+    return jsonify({"message": "Appointment updated"}), 200
+
+@app.route('/appointments/<int:id>', methods=['DELETE'])
+def delete_appointment(id):
+    appt = Appointment.query.get(id)
+    if appt:
+        db.session.delete(appt)
         db.session.commit()
-        return jsonify({"message": "Appointment booked"}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"message": "Appointment deleted"}), 200
+    return jsonify({"error": "Appointment not found"}), 404
+
 # ------------------- Donations -------------------
 @app.route('/donate', methods=['POST'])
 def donate():
@@ -298,24 +360,19 @@ def get_donations():
         "timestamp": d.timestamp
     } for d in donations])
 
-# ------------------- FAQ -------------------
+# ------------------- FAQs -------------------
 @app.route('/submit_faq', methods=['POST'])
 def submit_faq():
     data = request.get_json()
-    try:
-        new_faq = FAQ(question=data['question'])
-        db.session.add(new_faq)
-        db.session.commit()
-        return jsonify({"message": "FAQ submitted for approval"}), 201
-    except Exception as e:
-        return jsonify({"message": f"Submission failed: {e}"}), 500
-
+    new_faq = FAQ(question=data['question'])
+    db.session.add(new_faq)
+    db.session.commit()
+    return jsonify({"message": "FAQ submitted for approval"}), 201
 
 @app.route('/pending_faqs', methods=['GET'])
 def get_pending_faqs():
     faqs = FAQ.query.filter_by(approved=False).all()
     return jsonify([{"id": f.id, "question": f.question} for f in faqs])
-
 
 @app.route('/approve_faq/<int:faq_id>', methods=['POST'])
 def approve_faq(faq_id):
@@ -324,22 +381,19 @@ def approve_faq(faq_id):
     db.session.commit()
     return jsonify({"message": "FAQ approved"}), 200
 
-
 @app.route('/faqs', methods=['GET'])
 def get_approved_faqs():
     faqs = FAQ.query.filter_by(approved=True).all()
-    return jsonify([
-        {"id": f.id, "question": f.question, "answer": f.answer or "Pending response"}
-        for f in faqs
-    ])
+    return jsonify([{
+        "id": f.id,
+        "question": f.question,
+        "answer": f.answer or "Pending response"
+    } for f in faqs])
 
-# ------------------- Run Server -------------------
+# ------------------- Run -------------------
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-
-        # Seed only if FAQs table is empty
-        from models import FAQ
         if not FAQ.query.first():
             sample_faqs = [
                 FAQ(question="How do I adopt a pet?", answer="Browse pets and contact shelters."),

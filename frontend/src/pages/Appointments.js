@@ -7,21 +7,42 @@ function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [pets, setPets] = useState([]);
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
+  const userId = Number(localStorage.getItem("userId"));
 
   useEffect(() => {
-    API.get("/appointments")
-      .then((res) => setAppointments(res.data.filter(a => a.user_id === userId)))
-      .catch((err) => console.error("Failed to fetch appointments", err));
-
+    fetchAppointments();
     API.get("/pets")
       .then((res) => setPets(res.data))
       .catch((err) => console.error("Failed to fetch pets", err));
   }, [userId]);
 
-  const getPetName = (id) => {
-    const pet = pets.find(p => p.id === id);
-    return pet ? pet.name : "Unknown Pet";
+  const fetchAppointments = () => {
+    API.get("/appointments")
+      .then((res) => {
+        const filtered = res.data.filter((a) => a.user_id === userId);
+        setAppointments(filtered);
+      })
+      .catch((err) => console.error("Failed to fetch appointments", err));
+  };
+
+  const getPetInfo = (id) => {
+    return pets.find((p) => p.id === id);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to cancel this appointment?")) {
+      try {
+        await API.delete(`/appointments/${id}`);
+        fetchAppointments(); // refresh list
+      } catch (err) {
+        console.error("Error deleting appointment", err);
+      }
+    }
+  };
+
+  const handleEdit = (appt) => {
+    localStorage.setItem("editAppt", JSON.stringify(appt));
+    navigate("/edit-appointment");
   };
 
   return (
@@ -31,16 +52,31 @@ function Appointments() {
 
       {appointments.length ? (
         <div className="pet-grid">
-          {appointments.map((appt) => (
-            <div className="pet-card" key={appt.id}>
-              <div className="pet-info">
-                <h5>{getPetName(appt.pet_id)}</h5>
-                <p><strong>Date:</strong> {appt.date}</p>
-                <p><strong>Time:</strong> {appt.time}</p>
-                <p className="pet-desc">{appt.message}</p>
+          {appointments.map((appt) => {
+            const pet = getPetInfo(appt.pet_id);
+            return (
+              <div className="pet-card" key={appt.id}>
+                {pet && <img src={pet.image_url} alt={pet.name} />}
+                <div className="pet-info">
+                  <h5>{pet ? pet.name : "Unknown Pet"}</h5>
+                  <p><strong>Date:</strong> {appt.date}</p>
+                  <p><strong>Time:</strong> {appt.time}</p>
+                  <p className="pet-desc">{appt.message}</p>
+                </div>
+                <div className="pet-card-buttons">
+                <button onClick={() => {
+                 localStorage.setItem("editAppt", JSON.stringify(appt));
+                 navigate("/edit-appointment");
+                }}>Edit</button>
+
+                <button onClick={() => {
+                localStorage.setItem("deleteAppt", JSON.stringify(appt));
+                navigate("/delete-appointment");
+               }}>Delete</button>
+               </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <p>No appointments found.</p>

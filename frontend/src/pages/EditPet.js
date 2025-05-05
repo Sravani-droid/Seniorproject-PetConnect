@@ -5,55 +5,17 @@ import "../styles/FormPage.css";
 
 function EditPet() {
   const { id } = useParams();
+  const [form, setForm] = useState(null);
+  const [image, setImage] = useState("");
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    name: "",
-    breed: "",
-    age: "",
-    pet_type: "",
-    origin: "",
-    description: "",
-    gender: "",
-    birthdate: "",
-    weight: "",
-    height: "",
-    health_status: "",
-    rabies_vaccinated: false,
-    trained: false,
-    spayed_neutered: false,
-  });
-
-  const [image, setImage] = useState("");
-  const [message, setMessage] = useState("");
-
   useEffect(() => {
-    async function fetchPet() {
-      try {
-        const res = await API.get(`/pets/${id}`);
-        const data = res.data;
-        setForm({
-          name: data.name,
-          breed: data.breed,
-          age: data.age,
-          pet_type: data.pet_type,
-          origin: data.origin,
-          description: data.description || "",
-          gender: data.gender || "",
-          birthdate: data.birthdate || "",
-          weight: data.weight || "",
-          height: data.height || "",
-          health_status: data.health_status || "",
-          rabies_vaccinated: data.rabies_vaccinated || false,
-          trained: data.trained || false,
-          spayed_neutered: data.spayed_neutered || false,
-        });
-        setImage(data.image_url || "");
-      } catch (err) {
-        console.error("Error fetching pet:", err);
-      }
-    }
-    fetchPet();
+    API.get(`/pets/${id}`)
+      .then((res) => {
+        setForm(res.data);
+        setImage(res.data.image_url);
+      })
+      .catch((err) => console.error("Failed to fetch pet", err));
   }, [id]);
 
   const handleChange = (e) => {
@@ -80,66 +42,44 @@ function EditPet() {
         age: parseInt(form.age),
         image_url: image,
       });
-      setMessage("✅ Pet updated successfully!");
-      setTimeout(() => navigate("/dashboard"), 1200);
+      alert("✅ Pet updated!");
+      navigate("/dashboard");
     } catch (err) {
-      console.error("Update error:", err);
-      setMessage("❌ Failed to update pet.");
+      console.error("Update error", err);
+      alert("❌ Failed to update pet");
     }
   };
 
+  if (!form) return <p>Loading...</p>;
+
   return (
     <div className="form-container">
-      <h2>✏️ Edit Pet</h2>
+      <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+      <h2>Edit Pet</h2>
       <form onSubmit={handleSubmit}>
-        <input name="name" value={form.name} onChange={handleChange} placeholder="Name" className="auth-input" />
-        <input name="breed" value={form.breed} onChange={handleChange} placeholder="Breed" className="auth-input" />
-        <input type="number" name="age" value={form.age} onChange={handleChange} placeholder="Age" className="auth-input" />
+        <input name="name" value={form.name} onChange={handleChange} className="auth-input" />
+        <input name="breed" value={form.breed} onChange={handleChange} className="auth-input" />
+        <input type="number" name="age" value={form.age} onChange={handleChange} className="auth-input" />
+        <input name="gender" value={form.gender} onChange={handleChange} className="auth-input" />
+        <input name="birthdate" value={form.birthdate} onChange={handleChange} className="auth-input" />
+        <input name="weight" value={form.weight} onChange={handleChange} className="auth-input" />
+        <input name="height" value={form.height} onChange={handleChange} className="auth-input" />
+        <input name="health_status" value={form.health_status} onChange={handleChange} className="auth-input" />
+        <textarea name="description" value={form.description} onChange={handleChange} className="auth-textarea" />
 
-        <select name="pet_type" value={form.pet_type} onChange={handleChange} className="auth-input">
-          <option value="">Type</option>
-          <option value="Dog">Dog</option>
-          <option value="Cat">Cat</option>
-          <option value="Other">Other</option>
-        </select>
+        <div className="form-check"><input type="checkbox" name="rabies_vaccinated" checked={form.rabies_vaccinated} onChange={handleChange} /> Rabies Vaccinated</div>
+        <div className="form-check"><input type="checkbox" name="trained" checked={form.trained} onChange={handleChange} /> Trained</div>
+        <div className="form-check"><input type="checkbox" name="spayed_neutered" checked={form.spayed_neutered} onChange={handleChange} /> Spayed/Neutered</div>
 
-        <select name="origin" value={form.origin} onChange={handleChange} className="auth-input">
-          <option value="">Origin</option>
-          <option value="Stray">Stray</option>
-          <option value="Surrendered">Surrendered</option>
-        </select>
-
-        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="auth-textarea" />
-
-        <input name="gender" value={form.gender} onChange={handleChange} placeholder="Gender" className="auth-input" />
-        <input type="date" name="birthdate" value={form.birthdate} onChange={handleChange} className="auth-input" />
-        <input name="weight" value={form.weight} onChange={handleChange} placeholder="Weight" className="auth-input" />
-        <input name="height" value={form.height} onChange={handleChange} placeholder="Height" className="auth-input" />
-        <input name="health_status" value={form.health_status} onChange={handleChange} placeholder="Health Status" className="auth-input" />
-
-        <div className="form-check my-2">
-          <input type="checkbox" checked={form.rabies_vaccinated} name="rabies_vaccinated" onChange={handleChange} />
-          <label className="form-check-label">Rabies Vaccinated</label>
-        </div>
-
-        <div className="form-check my-2">
-          <input type="checkbox" checked={form.trained} name="trained" onChange={handleChange} />
-          <label className="form-check-label">Trained</label>
-        </div>
-
-        <div className="form-check my-2">
-          <input type="checkbox" checked={form.spayed_neutered} name="spayed_neutered" onChange={handleChange} />
-          <label className="form-check-label">Spayed/Neutered</label>
-        </div>
+        <div className="form-check"><input type="checkbox" name="good_with_dogs" checked={form.good_with_dogs} onChange={handleChange} /> Good With Dogs</div>
+        <div className="form-check"><input type="checkbox" name="good_with_cats" checked={form.good_with_cats} onChange={handleChange} /> Good With Cats</div>
+        <div className="form-check"><input type="checkbox" name="good_with_kids" checked={form.good_with_kids} onChange={handleChange} /> Good With Kids</div>
 
         <label>Change Image</label>
         <input type="file" accept="image/*" onChange={handleImage} className="auth-input" />
-        {image && (
-          <img src={image} alt="Preview" style={{ maxWidth: "200px", marginTop: "10px", borderRadius: "8px" }} />
-        )}
+        {image && <img src={image} alt="preview" style={{ maxWidth: "200px", margin: "10px 0" }} />}
 
-        <button type="submit" className="auth-btn">Update Pet</button>
-        {message && <p style={{ marginTop: "1rem" }}>{message}</p>}
+        <button type="submit" className="auth-btn">Save Changes</button>
       </form>
     </div>
   );

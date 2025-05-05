@@ -1,38 +1,45 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
-import "../styles/Dashboard.css";
+import "../styles/FormPage.css";
 
 function AddSuccessStory() {
-  const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
-  const [previewUrl, setPreviewUrl] = useState("");
+  const [form, setForm] = useState({ title: "", text: "" });
+  const [previewImage, setPreviewImage] = useState("");
   const navigate = useNavigate();
   const shelterId = localStorage.getItem("userId");
 
-  const handleFileChange = (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleImage = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setPreviewUrl(reader.result);
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setPreviewImage(reader.result);
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.title || !form.text || !previewImage) {
+      alert("Please fill all fields and upload an image.");
+      return;
+    }
+
     try {
       await API.post("/add_success_story", {
-        title,
-        text,
-        image_url: previewUrl,
+        title: form.title,
+        text: form.text,
+        image_url: previewImage,
         shelter_id: shelterId,
       });
-      alert("✅ Story posted!");
-      navigate("/success-stories");
+      alert("✅ Success story added!");
+      navigate("/dashboard");
     } catch (err) {
-      console.error("Story error:", err);
-      alert("❌ Failed to post story.");
+      console.error("Submit failed", err);
+      alert("❌ Failed to add story.");
     }
   };
 
@@ -41,25 +48,20 @@ function AddSuccessStory() {
       <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
       <h2>📖 Share a Success Story</h2>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Story Title"
-          className="auth-input"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Tell your story..."
-          className="auth-textarea"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          required
-        />
-        <label className="form-label">Upload Image</label>
-        <input type="file" className="form-control my-2" onChange={handleFileChange} />
-        {previewUrl && <img src={previewUrl} alt="Preview" style={{ maxWidth: "100%", borderRadius: "8px", marginTop: "1rem" }} />}
-        <button className="auth-btn" type="submit">Submit Story</button>
+        <input name="title" value={form.title} onChange={handleChange} placeholder="Story Title" className="auth-input" />
+        <textarea name="text" value={form.text} onChange={handleChange} placeholder="Story Description" className="auth-textarea" />
+
+        <label>Upload Image</label>
+        <input type="file" accept="image/*" onChange={handleImage} className="auth-input" />
+        {previewImage && (
+          <img
+            src={previewImage}
+            alt="preview"
+            style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px", marginBottom: "1rem" }}
+          />
+        )}
+
+        <button type="submit" className="auth-btn">Submit Story</button>
       </form>
     </div>
   );
